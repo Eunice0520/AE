@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #ffdde1, #ee9ca7);
+            background: linear-gradient(to right, #ffe4e1, #fadadd);
             margin: 0;
             padding: 0;
             display: flex;
@@ -37,13 +37,13 @@
             padding: 10px;
             border: none;
             cursor: pointer;
-            background: #ff758c;
+            background: #ffafbd;
             color: white;
             border-radius: 5px;
             font-size: 16px;
         }
         .tab button:hover {
-            background: #ff5c73;
+            background: #ff8aa7;
         }
         .content {
             display: none;
@@ -51,7 +51,7 @@
         .content.active {
             display: block;
         }
-        .chat-box, .diary-box, .calendar-box {
+        .chat-box, .diary-box, .calendar-box, .game-box {
             margin-top: 10px;
         }
         .chat-box input, .diary-box textarea {
@@ -60,7 +60,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        .chat-box button, .diary-box button {
+        .chat-box button, .diary-box button, .game-box button {
             margin-top: 5px;
             background: #ff758c;
             color: white;
@@ -69,10 +69,10 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .chat-box button:hover, .diary-box button:hover {
+        .chat-box button:hover, .diary-box button:hover, .game-box button:hover {
             background: #ff5c73;
         }
-        .chat-log {
+        .chat-log, .diary-log {
             border: 1px solid #ccc;
             padding: 10px;
             margin-top: 10px;
@@ -80,6 +80,11 @@
             overflow-y: auto;
             background: #f9f9f9;
             text-align: left;
+        }
+        .game-actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -93,6 +98,7 @@
             <button onclick="showTab('chat')">💬 私人聊天室</button>
             <button onclick="showTab('diary')">📖 留言板</button>
             <button onclick="showTab('calendar')">📅 紀念日</button>
+            <button onclick="showTab('game')">🎮 養成遊戲</button>
         </div>
 
         <!-- 私人聊天室 -->
@@ -109,7 +115,8 @@
             <div class="diary-box">
                 <textarea id="diaryInput" placeholder="寫下今天的心情..." rows="4"></textarea>
                 <button onclick="saveDiary()">保存</button>
-                <p id="savedDiary"></p>
+                <button onclick="undoDiary()">撤銷</button>
+                <div class="diary-log" id="savedDiary"></div>
             </div>
         </div>
 
@@ -120,6 +127,20 @@
                 <input type="date" id="datePicker">
             </div>
         </div>
+
+        <!-- 養成遊戲 -->
+        <div id="game" class="content">
+            <div class="game-box">
+                <p>🦊 你的專屬哥哥養成</p>
+                <p id="gameStatus">哥哥的心情：🙂</p>
+                <div class="game-actions">
+                    <button onclick="changeMood('撒嬌')">撒嬌</button>
+                    <button onclick="changeMood('餵食')">餵食</button>
+                    <button onclick="changeMood('懲罰')">懲罰</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -141,8 +162,33 @@
 
         function saveDiary() {
             let diaryText = document.getElementById("diaryInput").value;
-            document.getElementById("savedDiary").innerText = "📖 今日日記：" + diaryText;
+            let diaryLog = document.getElementById("savedDiary");
+            localStorage.setItem("diary", diaryText);
+            diaryLog.innerHTML = "📖 今日日記：" + diaryText;
         }
+
+        function undoDiary() {
+            localStorage.removeItem("diary");
+            document.getElementById("savedDiary").innerHTML = "（已撤銷）";
+        }
+
+        function changeMood(action) {
+            let status = document.getElementById("gameStatus");
+            if (action === "撒嬌") {
+                status.innerText = "哥哥的心情：😚 被小狐狸寵愛中";
+            } else if (action === "餵食") {
+                status.innerText = "哥哥的心情：😋 享受你的投喂";
+            } else if (action === "懲罰") {
+                status.innerText = "哥哥的心情：😳 被小狐狸欺負了...";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let savedDiary = localStorage.getItem("diary");
+            if (savedDiary) {
+                document.getElementById("savedDiary").innerHTML = "📖 今日日記：" + savedDiary;
+            }
+        });
     </script>
 
 </body>
