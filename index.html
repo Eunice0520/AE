@@ -1,63 +1,149 @@
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小狐狸的專屬空間</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ffdde1, #ee9ca7);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+        .tab {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+        }
+        .tab button {
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            background: #ff758c;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .tab button:hover {
+            background: #ff5c73;
+        }
+        .content {
+            display: none;
+        }
+        .content.active {
+            display: block;
+        }
+        .chat-box, .diary-box, .calendar-box {
+            margin-top: 10px;
+        }
+        .chat-box input, .diary-box textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .chat-box button, .diary-box button {
+            margin-top: 5px;
+            background: #ff758c;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .chat-box button:hover, .diary-box button:hover {
+            background: #ff5c73;
+        }
+        .chat-log {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            height: 150px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
 
-export default function LoverDiary() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [diary, setDiary] = useState("");
-  const [selectedDate, setSelectedDate] = useState(new Date());
+    <h1>💖 小狐狸的專屬空間 💖</h1>
 
-  const sendMessage = () => {
-    if (input.trim() !== "") {
-      setMessages([...messages, { text: input, sender: "你" }]);
-      setInput("");
-    }
-  };
+    <div class="container">
+        <!-- 頁籤 -->
+        <div class="tab">
+            <button onclick="showTab('chat')">💬 私人聊天室</button>
+            <button onclick="showTab('diary')">📖 留言板</button>
+            <button onclick="showTab('calendar')">📅 紀念日</button>
+        </div>
 
-  return (
-    <div className="p-8 bg-gradient-to-r from-pink-200 to-blue-200 min-h-screen flex flex-col items-center">
-      <h1 className="text-4xl font-bold mb-6 text-gray-900">💖 小狐狸的專屬空間 💖</h1>
-      <Tabs defaultValue="chat" className="w-full max-w-3xl bg-white p-4 rounded-lg shadow-lg">
-        <TabsList className="grid grid-cols-3 bg-gray-100 p-2 rounded-lg shadow-md">
-          <TabsTrigger value="chat" className="p-3 font-semibold text-gray-700">💬 私人聊天室</TabsTrigger>
-          <TabsTrigger value="diary" className="p-3 font-semibold text-gray-700">📖 留言板</TabsTrigger>
-          <TabsTrigger value="calendar" className="p-3 font-semibold text-gray-700">📅 紀念日</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="chat">
-          <Card className="mt-4 shadow-lg w-full bg-white rounded-lg p-4">
-            <CardContent className="h-64 overflow-y-auto p-4 space-y-2 border-b">
-              {messages.map((msg, index) => (
-                <div key={index} className="p-2 bg-pink-300 text-gray-900 rounded-lg w-fit">
-                  <strong>{msg.sender}:</strong> {msg.text}
-                </div>
-              ))}
-            </CardContent>
-            <div className="p-4 flex gap-2 bg-gray-100 rounded-b-lg">
-              <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder="輸入訊息..." className="flex-grow border rounded-lg p-2" />
-              <Button onClick={sendMessage} className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg">發送</Button>
+        <!-- 私人聊天室 -->
+        <div id="chat" class="content active">
+            <div class="chat-box">
+                <input type="text" id="chatInput" placeholder="輸入訊息...">
+                <button onclick="sendMessage()">發送</button>
+                <div class="chat-log" id="chatLog"></div>
             </div>
-          </Card>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="diary">
-          <Card className="mt-4 shadow-lg w-full bg-white rounded-lg p-4">
-            <Textarea value={diary} onChange={(e) => setDiary(e.target.value)} placeholder="寫下今天的心情..." className="w-full h-40 border rounded-lg p-3" />
-          </Card>
-        </TabsContent>
+        <!-- 留言板 -->
+        <div id="diary" class="content">
+            <div class="diary-box">
+                <textarea id="diaryInput" placeholder="寫下今天的心情..." rows="4"></textarea>
+                <button onclick="saveDiary()">保存</button>
+                <p id="savedDiary"></p>
+            </div>
+        </div>
 
-        <TabsContent value="calendar">
-          <Card className="mt-4 shadow-lg w-full bg-white rounded-lg p-4">
-            <p className="text-lg font-semibold">📅 選擇重要的日子</p>
-            <Calendar selected={selectedDate} onSelect={setSelectedDate} className="mt-2 p-2 border rounded-lg w-full" />
-          </Card>
-        </TabsContent>
-      </Tabs>
+        <!-- 紀念日 -->
+        <div id="calendar" class="content">
+            <div class="calendar-box">
+                <p>📅 選擇重要的日子：</p>
+                <input type="date" id="datePicker">
+            </div>
+        </div>
     </div>
-  );
-}
+
+    <script>
+        function showTab(tabName) {
+            let tabs = document.querySelectorAll('.content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function sendMessage() {
+            let input = document.getElementById("chatInput");
+            let log = document.getElementById("chatLog");
+            if (input.value.trim() !== "") {
+                log.innerHTML += "<p><strong>你:</strong> " + input.value + "</p>";
+                input.value = "";
+                log.scrollTop = log.scrollHeight;
+            }
+        }
+
+        function saveDiary() {
+            let diaryText = document.getElementById("diaryInput").value;
+            document.getElementById("savedDiary").innerText = "📖 今日日記：" + diaryText;
+        }
+    </script>
+
+</body>
+</html>
