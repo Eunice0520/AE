@@ -13,7 +13,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
         }
         h1 {
             color: #333;
@@ -59,7 +58,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        .chat-box button, .diary-box button {
+        .chat-box button, .diary-box button, .game-box button {
             margin-top: 5px;
             background: #ff758c;
             color: white;
@@ -68,7 +67,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .chat-box button:hover, .diary-box button:hover {
+        .chat-box button:hover, .diary-box button:hover, .game-box button:hover {
             background: #ff5c73;
         }
         .chat-log, .diary-log {
@@ -110,6 +109,7 @@
             <button onclick="showTab('chat')">💬 私人聊天室</button>
             <button onclick="showTab('diary')">📖 留言板</button>
             <button onclick="showTab('calendar')">📅 紀念日</button>
+            <button onclick="showTab('game')">🎮 養成遊戲</button>
         </div>
 
         <!-- 私人聊天室 -->
@@ -124,15 +124,9 @@
         <!-- 留言板 -->
         <div id="diary" class="content">
             <div class="diary-box">
-                <div class="mood-select">
-                    <button onclick="selectMood('😊')">😊</button>
-                    <button onclick="selectMood('😢')">😢</button>
-                    <button onclick="selectMood('😡')">😡</button>
-                    <button onclick="selectMood('😍')">😍</button>
-                    <button onclick="selectMood('😴')">😴</button>
-                </div>
                 <textarea id="diaryInput" placeholder="寫下今天的心情..." rows="4"></textarea>
                 <button onclick="saveDiary()">保存</button>
+                <button onclick="undoDiary()">撤銷</button>
                 <div class="diary-log" id="savedDiary"></div>
             </div>
         </div>
@@ -142,6 +136,18 @@
             <div class="calendar-box">
                 <p>📅 選擇重要的日子：</p>
                 <input type="date" id="datePicker">
+                <p id="selectedDateText"></p>
+            </div>
+        </div>
+
+        <!-- 養成遊戲 -->
+        <div id="game" class="content">
+            <div class="game-box">
+                <p>🦊 你的專屬哥哥養成</p>
+                <p id="gameStatus">哥哥的心情：🙂</p>
+                <button onclick="changeMood('撒嬌')">撒嬌</button>
+                <button onclick="changeMood('餵食')">餵食</button>
+                <button onclick="changeMood('懲罰')">懲罰</button>
             </div>
         </div>
 
@@ -149,8 +155,7 @@
 
     <script>
         function showTab(tabName) {
-            let tabs = document.querySelectorAll('.content');
-            tabs.forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.content').forEach(tab => tab.classList.remove('active'));
             document.getElementById(tabName).classList.add('active');
         }
 
@@ -166,28 +171,26 @@
 
         function saveDiary() {
             let diaryText = document.getElementById("diaryInput").value;
-            let mood = document.querySelector('.mood-select button.active')?.innerText || '🙂';
             let diaryLog = document.getElementById("savedDiary");
             let date = new Date().toLocaleDateString();
 
-            let entry = `<p>${date} - ${mood} - ${diaryText}</p>`;
+            let entry = `<p>${date} - ${diaryText}</p>`;
             diaryLog.innerHTML += entry;
-
             localStorage.setItem("diary", diaryLog.innerHTML);
         }
 
-        function selectMood(mood) {
-            let buttons = document.querySelectorAll('.mood-select button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        function undoDiary() {
+            let diaryLog = document.getElementById("savedDiary");
+            diaryLog.innerHTML = "";
+            localStorage.removeItem("diary");
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            let savedDiary = localStorage.getItem("diary");
-            if (savedDiary) {
-                document.getElementById("savedDiary").innerHTML = savedDiary;
-            }
-        });
+        function changeMood(action) {
+            let status = document.getElementById("gameStatus");
+            if (action === "撒嬌") status.innerText = "哥哥的心情：😚 被小狐狸寵愛中";
+            else if (action === "餵食") status.innerText = "哥哥的心情：😋 享受你的投喂";
+            else if (action === "懲罰") status.innerText = "哥哥的心情：😳 被小狐狸欺負了...";
+        }
     </script>
 
 </body>
