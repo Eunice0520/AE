@@ -1,0 +1,65 @@
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+export default function LoverDiary() {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [diary, setDiary] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const sendMessage = () => {
+    if (input.trim() !== "") {
+      setMessages([...messages, { text: input, sender: "你" }]);
+      setInput("");
+    }
+  };
+
+  return (
+    <div className="p-4 space-y-6">
+      <Tabs defaultValue="chat" className="w-full">
+        <TabsList className="grid grid-cols-3">
+          <TabsTrigger value="chat">💬 私人聊天室</TabsTrigger>
+          <TabsTrigger value="diary">📖 留言板</TabsTrigger>
+          <TabsTrigger value="calendar">📅 紀念日</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="chat">
+          <Card>
+            <CardContent className="h-64 overflow-y-auto p-4 space-y-2">
+              {messages.map((msg, index) => (
+                <div key={index} className="p-2 bg-gray-200 rounded-lg w-fit">
+                  <strong>{msg.sender}:</strong> {msg.text}
+                </div>
+              ))}
+            </CardContent>
+            <div className="p-4 flex gap-2">
+              <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder="輸入訊息..." />
+              <Button onClick={sendMessage}>發送</Button>
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="diary">
+          <Card>
+            <CardContent className="p-4">
+              <Textarea value={diary} onChange={(e) => setDiary(e.target.value)} placeholder="寫下今天的心情..." />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="calendar">
+          <Card>
+            <CardContent className="p-4">
+              <Calendar selected={selectedDate} onSelect={setSelectedDate} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
